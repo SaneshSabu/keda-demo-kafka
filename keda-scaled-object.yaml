@@ -1,0 +1,29 @@
+apiVersion: keda.sh/v1alpha1
+kind: ScaledObject
+metadata:
+  annotations:
+    # autoscaling.keda.sh/paused: "true"
+    # autoscaling.keda.sh/paused-replicas: "3"
+  name: kafka-amqstreams-consumer
+  namespace: kafka-consumer
+spec:
+  cooldownPeriod: 5
+  maxReplicaCount: 5
+  minReplicaCount: 0
+  pollingInterval: 5
+  fallback:
+    failureThreshold: 3
+    replicas: 4
+  scaleTargetRef:
+    name: kafka-amqstreams-consumer
+  triggers:
+  - metadata:
+      topic: my-topic
+      consumerGroup: my-group
+      bootstrapServers: my-cluster-kafka-bootstrap.kafka.svc.cluster.local:9092
+      lagThreshold: '1'
+      activationLagThreshold: '1'
+      offSetResetPolicy: 'latest'
+      allowIdleConsumers: "true"
+    type: apache-kafka
+

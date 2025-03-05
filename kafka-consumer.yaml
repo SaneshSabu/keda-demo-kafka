@@ -1,0 +1,37 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: kafka-consumer
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: kafka-amqstreams-consumer
+  namespace: kafka-consumer
+  labels:
+    app: kafka-amqstreams-consumer
+spec:
+  replicas: 0
+  selector:
+    matchLabels:
+      app: kafka-amqstreams-consumer
+  template:
+    metadata:
+      labels:
+        app: kafka-amqstreams-consumer
+    spec:
+      containers:
+        - name: kafka-amqstreams-consumer
+          image: sanesh9746/kafka-app:latest
+          command: ["/bin/bash", "-c", "/usr/local/bin/entrypoint.sh"]
+          imagePullPolicy: IfNotPresent
+          env:
+            - name: BOOTSTRAP_SERVERS
+              value: "my-cluster-kafka-bootstrap.kafka.svc.cluster.local:9092"
+          resources:
+            requests:
+              cpu: 100m
+              memory: 100Mi
+            limits:
+              cpu: 500m
+              memory: 500Mi

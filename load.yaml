@@ -1,0 +1,38 @@
+apiVersion: batch/v1
+kind: Job 
+metadata:
+  generateName: kafka-amqstreams-producer-
+spec:
+  parallelism: 1
+  completions: 1
+  backoffLimit: 1
+  template:
+    metadata:
+      name: kafka-amqstreams-producer
+      labels:
+        app: kafka-amqstreams-producer
+    spec:
+      restartPolicy: Never
+      containers:
+        - name: kafka-amqstreams-producer
+          image: sanesh9746/kafka-app:latest
+          imagePullPolicy: IfNotPresent
+          env:
+            - name: BOOTSTRAP_SERVERS
+              value: "my-cluster-kafka-bootstrap.kafka.svc.cluster.local:9092"
+            - name: TOPIC
+              value: my-topic
+            - name: MESSAGE_COUNT
+              value: "1000"
+            - name: DELAY_MS
+              value: "100"
+          resources:
+            requests:
+              cpu: 100m
+              memory: 100Mi
+            limits:
+              cpu: 500m
+              memory: 500Mi
+          command:
+            - /kafkaproducerapp
+        
